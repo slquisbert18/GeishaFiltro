@@ -17,9 +17,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QDateEdit, QHBoxLayout, QHeaderView,
     QLabel, QLineEdit, QListView, QMainWindow,
-    QPushButton, QScrollArea, QSizePolicy, QSpacerItem,
-    QSplitter, QStatusBar, QTableWidget, QTableWidgetItem,
-    QVBoxLayout, QWidget)
+    QProgressBar, QPushButton, QScrollArea, QSizePolicy,
+    QSpacerItem, QSplitter, QStatusBar, QTableWidget,
+    QTableWidgetItem, QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -41,6 +41,12 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_5.addItem(self.horizontalSpacer)
 
+        self.progressBar = QProgressBar(self.centralwidget)
+        self.progressBar.setObjectName(u"progressBar")
+        self.progressBar.setValue(24)
+
+        self.horizontalLayout_5.addWidget(self.progressBar)
+
         self.botonExplorar = QPushButton(self.centralwidget)
         self.botonExplorar.setObjectName(u"botonExplorar")
         icon = QIcon()
@@ -51,7 +57,8 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_5.setStretch(0, 1)
         self.horizontalLayout_5.setStretch(1, 2)
-        self.horizontalLayout_5.setStretch(2, 1)
+        self.horizontalLayout_5.setStretch(2, 2)
+        self.horizontalLayout_5.setStretch(3, 1)
 
         self.VerticalLayout.addLayout(self.horizontalLayout_5)
 
@@ -168,34 +175,11 @@ class Ui_MainWindow(object):
 
         self.hlInputs.addLayout(self.verticalLayout_7)
 
-        self.verticalLayout_4 = QVBoxLayout()
-        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
-        self.label_3 = QLabel(self.centralwidget)
-        self.label_3.setObjectName(u"label_3")
-
-        self.verticalLayout_4.addWidget(self.label_3)
-
-        self.leRgb = QLineEdit(self.centralwidget)
-        self.leRgb.setObjectName(u"leRgb")
-
-        self.verticalLayout_4.addWidget(self.leRgb)
-
-        self.rgbStatus = QLabel(self.centralwidget)
-        self.rgbStatus.setObjectName(u"rgbStatus")
-
-        self.verticalLayout_4.addWidget(self.rgbStatus)
-
-        self.verticalLayout_4.setStretch(0, 2)
-        self.verticalLayout_4.setStretch(2, 1)
-
-        self.hlInputs.addLayout(self.verticalLayout_4)
-
         self.hlInputs.setStretch(0, 1)
         self.hlInputs.setStretch(1, 1)
         self.hlInputs.setStretch(2, 1)
         self.hlInputs.setStretch(3, 2)
         self.hlInputs.setStretch(4, 1)
-        self.hlInputs.setStretch(5, 1)
 
         self.VerticalLayout.addLayout(self.hlInputs)
 
@@ -315,10 +299,6 @@ class Ui_MainWindow(object):
         self.nombreStatus.setText("")
         self.label_4.setText(QCoreApplication.translate("MainWindow", u"HEX", None))
         self.hexStatus.setText("")
-        self.label_3.setText(QCoreApplication.translate("MainWindow", u"RGB", None))
-        self.leRgb.setText("")
-        self.leRgb.setPlaceholderText(QCoreApplication.translate("MainWindow", u"(R, G, B)", None))
-        self.rgbStatus.setText("")
         self.botonBuscar.setText(QCoreApplication.translate("MainWindow", u"BUSCAR", None))
         self.botonDetener.setText(QCoreApplication.translate("MainWindow", u"DETENER", None))
         self.botonReiniciar.setText(QCoreApplication.translate("MainWindow", u"LIMPIAR", None))

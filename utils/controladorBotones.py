@@ -20,7 +20,6 @@ class controladorBusqueda():
         ui.fechaStatus.setText(" ")
         ui.nombreStatus.setText(" ")
         ui.hexStatus.setText(" ")
-        ui.rgbStatus.setText(" ")
         ui.foto.clear()
         
         # mostramos la barra de carga
@@ -59,9 +58,9 @@ class controladorBusqueda():
             if ',' in tamanioFinal:
                 tamanioFinal = ui.leTamanio.text().replace(',', '.')
             filtros["tamanio"] = tamanioFinal
+            guardar_historial(self.main, ui.leTamanio, tamanioFinal)
         guardarInputs(ui.leNombreArchivo, "nombre")
         guardarInputs(ui.leHex, "hex")
-        guardarInputs(ui.leRgb, "rgb")
         
         if fechaRecogida != "":
             filtros["fecha"] = fechaRecogida
@@ -119,8 +118,6 @@ class controladorBusqueda():
         ui.leHex.clear()
         ui.hexStatus.setText(" ")
 
-        ui.leRgb.clear()
-        ui.rgbStatus.setText(" ")
 
         ui.resultadosDeBusqueda.setModel(imagenesModel({}, icon_size=100))
         ui.foto.clear()

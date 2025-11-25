@@ -81,6 +81,10 @@ class PopUpHistorial(QListWidget):
         self.hide()
         super().focusOutEvent(event)
 
+    def recolocar(self):
+        if self.lineEditActual:
+            posicion = self.lineEditActual.mapToGlobal(QPoint(0, self.lineEditActual.height()))
+            self.move(posicion)
 # para colocar un elemento del historial en el lineEdit
 def colocar_en_le(self, index):
     texto = self.ui.cbHistorial.itemText(index)

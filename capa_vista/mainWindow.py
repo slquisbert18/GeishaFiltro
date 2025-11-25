@@ -1,6 +1,6 @@
 from .principal import Ui_MainWindow
 from PySide6.QtWidgets import QApplication, QMainWindow, QListView, QSizePolicy, QFileDialog, QLineEdit
-from PySide6.QtCore import Qt, QSize, QDate, QSettings, QEvent, QTimer
+from PySide6.QtCore import Qt, QSize, QDate, QSettings, QEvent, QTimer, QThread
 from PySide6.QtGui import QPixmap, QFont
 
 from modelos.modeloImagenes import imagenesModel
@@ -9,6 +9,7 @@ from utils.mostrarResultados import *
 from utils.controladorHistorial import *
 from utils.controladorBotones import controladorBusqueda
 from utils.controladorTeclado import eventosTeclas
+from workers.workerDataset import WorkerDataset
 
 
 class MainWindow(QMainWindow):
@@ -32,7 +33,12 @@ class MainWindow(QMainWindow):
 
         # creamos un objeto QSettings
         self.settings = QSettings("Geisha", "AppGeisha")
-        self.cargar_ruta_seleccionada()
+        #self.cargar_ruta_seleccionada()
+        rutaGuardada = self.settings.value("ruta_busqueda", "")
+        if rutaGuardada:
+            self.ruta = rutaGuardada
+            self.cargarDataset(self.ruta)
+
 
         # **************************** logo ****************************************
         logo_png = QPixmap("src/logoMediano.jpg")
@@ -73,7 +79,6 @@ class MainWindow(QMainWindow):
             self.ui.leTamanio,
             self.ui.leNombreArchivo,
             self.ui.leHex,
-            self.ui.leRgb,
         ]
         for le in self.listaLineEdits:
             le.installEventFilter(self)
@@ -134,6 +139,28 @@ class MainWindow(QMainWindow):
 
 
     # ************************ FUNCION QUE TRABAJA CON EL SISTEMA **********************
+    def cargarDataset(self, ruta):
+        # limpiamos resultados previos
+        self.resultados = {}
+        self.ui.resultadosDeBusqueda.setModel(imagenesModel({}, icon_size=100))
+
+        # creamos el worker para procesar el dataset
+        self.hiloDataset = QThread()
+        self.workerDataset = WorkerDataset(ruta)
+        self.workerDataset.moveToThread(self.hiloDataset)
+
+        # conexiones
+        self.hiloDataset.started.connect(self.workerDataset.run)
+        self.workerDataset.progreso.connect(self.ui.progressBar.setValue)
+        self.workerDataset.finalizado.connect(self.datasetCargado)
+        self.workerDataset.error.connect(lambda e: print("Error", e))
+        self.workerDataset.finalizado.connect(self.hiloDataset.quit)
+        self.workerDataset.finalizado.connect(self.workerDataset.deleteLater)
+        self.hiloDataset.finished.connect(self.hiloDataset.deleteLater)
+
+        self.hiloDataset.start()
+
+
     def seleccionar_ruta(self):
         ruta = QFileDialog.getExistingDirectory(
             self,
@@ -145,13 +172,13 @@ class MainWindow(QMainWindow):
         if ruta: # si el usuario selecciono una carpeta
             self.settings.setValue("ruta_busqueda", ruta)
             self.ruta = ruta
+            self.cargarDataset(self.ruta)
 
-            # recargamos el diccinoario principal con la nueva ruta
-            self.dataset = armarDiccionario(self.ruta)
 
-            # reiniciamos resultados previos
-            self.resultados = {}
-            self.ui.resultadosDeBusqueda.setModel(imagenesModel({}, icon_size=100))
+    def datasetCargado(self, dataset):
+        self.dataset = dataset
+        self.ui.progressBar.setValue(100)
+        self.ui.statusbar.showMessage(f"Datos cargado: {len(dataset)} imagenes")
 
     def cargar_ruta_seleccionada(self):
         ruta = self.settings.value("ruta_busqueda", "")
@@ -164,7 +191,7 @@ class MainWindow(QMainWindow):
         else:
             self.ruta = ""
 
-    # ***************** EVENT FILTER **************************
+    # ***************** EVENTOS **************************
     # para mostrar el combobox al hacer clic sobre el lineEdit
     def eventFilter(self, obj, event):
         if isinstance(obj, QLineEdit):
@@ -195,4 +222,16 @@ class MainWindow(QMainWindow):
                 Qt.SmoothTransformation
             )
             self.ui.foto.setPixmap(pixmap_scaled)
+        
+        try:
+            self.popup.recolocar()
+        except:
+            pass
         super().resizeEvent(event)
+
+    def moveEvent(self, event):
+        try:
+            self.popup.recolocar()
+        except:
+            pass
+        super().moveEvent(event)

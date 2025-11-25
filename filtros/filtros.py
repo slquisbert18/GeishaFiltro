@@ -9,7 +9,7 @@ def filtrar_por_tamanio(resultados, inputDimension):
     for clave in list(resultados.keys()):
         datos = resultados[clave]
         dimensionArchivo = datos["tamanio"]
-        if inputDimension in dimensionArchivo:
+        if inputDimension.lower() in dimensionArchivo.lower():
             resultado[clave] = datos
     return resultado
 
@@ -18,7 +18,7 @@ def filtrar_por_fondo(resultados, inputFondo):
     for clave in list(resultados.keys()):
         datos = resultados[clave]
         fondoArchivo = datos["fondo"]
-        if inputFondo in fondoArchivo:
+        if inputFondo.lower() in fondoArchivo.lower():
             resultado[clave] = datos
     return resultado
 
@@ -42,19 +42,9 @@ def filtrar_por_nombre(resultados, inputNombre):
         nombreArchivo = datos["nombre"]
 
         # si el nombre introducido no esta en el nombre extraido, se elimina de la lista
-        if inputNombre in nombreArchivo:
+        if inputNombre.lower() in nombreArchivo.lower():
             resultado[clave] = datos
             
-    return resultado
-
-def filtrar_por_rgb(resultados, inputCodRGB):
-    resultado = {}
-    for clave in list(resultados.keys()):
-        datos = resultados[clave]
-        rgbArchivo = datos["rgb"]
-        if inputCodRGB in rgbArchivo:
-            resultado[clave] = datos
-
     return resultado
 
 def filtrar_por_hex(resultados, inputCodHEX):
@@ -62,7 +52,7 @@ def filtrar_por_hex(resultados, inputCodHEX):
     for clave in list(resultados.keys()):
         datos = resultados[clave]
         hexArchivo = datos["hex"]
-        if inputCodHEX in hexArchivo:
+        if inputCodHEX.lower() in hexArchivo.lower():
             resultado[clave] = datos
     return resultado
 

@@ -86,23 +86,6 @@ class Worker(QObject):
 
                 if not self.resultados:
                     self.status_update.emit("hex", "Sin coincidencias")
-
-            elif primerFiltro == "rgb":
-                #texto = valor.replace('(', '').replace(')', '')
-                #valores = texto.split(',')
-
-                #r = int(valores[0].strip())
-                #g = int(valores[1].strip())
-                #b = int(valores[2].strip())
-
-                self.resultados = busqueda_global_rgb(
-                    valor.strip(),
-                    datasetActual,
-                    cancelarCallBack=lambda: self.cancelar
-                )
-
-                if not self.resultados:
-                    self.status_update.emit("rgb", "Sin coincidencias")
             
             if not self.resultados:
                 # si el primer filtro no consiguio resultados lo eliminamos de la copia de nuestro diccionario de filtros
@@ -171,20 +154,5 @@ class Worker(QObject):
                         self.status_update.emit("hex", "Sin coincidencias")
                     else:
                         self.resultados = resultadoFiltroHex
-
-                elif filtro == "rgb":
-                    #texto = valor.replace('(', '').replace(')', '')
-                    #valores = texto.split(',')
-
-                    #r = int(valores[0].strip())
-                    #g = int(valores[1].strip())
-                    #b = int(valores[2].strip())
-                    resultadoFiltroRgb = filtrar_por_rgb(self.resultados, valor)
-                    if self.resultados == resultadoFiltroRgb:
-                        self.status_update.emit("rgb", "Mismas coincidencias")
-                    elif not resultadoFiltroRgb:
-                        self.status_update.emit("rgb", "Sin coincidencias")
-                    else:
-                        self.resultados = resultadoFiltroRgb
      
         self.finished.emit(self.resultados)

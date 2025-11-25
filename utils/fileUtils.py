@@ -8,9 +8,13 @@ from utils.obtenerCaracteristicas import *
 formatos = ('*.jpg','*.png', '*.jpeg', '*.psd', '*.raw') 
 
 # cargar diccionario
-def armarDiccionario(ruta):
+def armarDiccionario(ruta, senialProgreso = None):
     carpeta = Path(ruta)
     dataset = {} # usaremos un diccionario para almacenar diccionarios
+    
+    totalArchivos = sum(1 for formato in formatos for _ in carpeta.rglob(formato))
+    progreso = 0
+    
     for formato in formatos:
         for archivo in carpeta.rglob(formato):
             rutaArchivo = str(archivo)
@@ -21,22 +25,27 @@ def armarDiccionario(ruta):
                 ancho y alto en cm
                 fecha de creacion
                 nombre del archivo
-                codigo rgb y hex
+                codigo hex
             """
-            r, g, b, hex = obtener_rgb_hex(rutaArchivo) or (0,0,0,None) # devulve un codigo rgb: (XX, YY, ZZ)
+            hex = obtener_hex(rutaArchivo)  # devulve un codigo hex: #000000
             datosArchivo = {
                 "nombre": archivo.name,
                 "formato": archivo.suffix.lower(), # retorna el formato de la imagen: jpg, jpeg, etc.
                 "fondo": obtenerFondo(rutaArchivo), # retorna el nombre del colore: "rojo", "azul", etc
                 "tamanio": obtener_tamanio(rutaArchivo), # retorna una cadena: "AxB"
                 "fecha": obtener_fecha(rutaArchivo), # devuelve un diccionario con las fechas disponibles
-                "rgb": f"({r}, {g}, {b})",
-                "hex": hex, 
+                "hex": hex 
             }
 
-            # guardamos el diccionario de datos de la imagen en otro diccionario donde
-            # clave: ruta de la imagen, valor: diccionario de datos
             dataset[rutaArchivo] = datosArchivo
+
+            # emitimos el progreso
+            progreso += 1
+            if senialProgreso:
+                senialProgreso.emit(int(progreso / totalArchivos * 100))
+            
+            # guardamos el diccionario de datos de la imagen en un diccionario donde
+            # clave: ruta de la imagen, valor: diccionario de datos
     return dataset
 
 # funcion para abrir una imagen en el explorador

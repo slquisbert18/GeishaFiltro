@@ -180,41 +180,38 @@ def obtenerFondo(ruta_imagen, umbral_porcentaje = 80):
         return None
 
 # obtener el codigo rgb/hex de una imagen
-def obtener_rgb_hex(nombre):
+def obtener_hex(nombre):
     ruta_archivo = leer_rutas(nombre)
-    if ruta_archivo is not None:
-        imagen = cv2.imread(str(nombre))
+    if ruta_archivo is None:
+        return None
+    imagen = cv2.imread(str(nombre))
 
-        if imagen is None:
-            return None, None, None, None
-        
-        else:
-            # convertimos la imagen de BGR a RGB
-            imagen_rgb = cv2.cvtColor(imagen, cv2.COLOR_BGR2RGB)
-
-            # elegimos una zona del fondo
-            """
-            x: coordenada x
-            y: coordenada y
-            ancho, alto: tamanio area
-            """
-            x, y, ancho, alto = 0, 0, 20, 20
-            zona_fondo = imagen_rgb[y:y+alto, x:x+ancho]
-
-            # calculamos el color promedio de esa zona
-            color_promedio = np.mean(zona_fondo.reshape(-1, 3), axis=0)
-            r, g, b = [int(c) for c in color_promedio] 
-
-            # convertimos a formato HEX
-            color_hex = "#{:02x}{:02x}{:02x}".format(r, g, b)
-
-            #print(f"Color de fondo en RGB: {r}, {g}, {b}")
-            #print(f"Color de fondo en HEX: {color_hex}")
-
-            return r, g, b, color_hex
+    if imagen is None:
+        return None
     
-    else: 
-        return None, None, None
+    # convertimos la imagen de BGR a RGB
+    imagen_rgb = cv2.cvtColor(imagen, cv2.COLOR_BGR2RGB)
+
+    # elegimos una zona del fondo
+    """
+    x: coordenada x
+    y: coordenada y
+    ancho, alto: tamanio area
+    """
+    x, y, ancho, alto = 0, 0, 20, 20
+    zona_fondo = imagen_rgb[y:y+alto, x:x+ancho]
+
+    # calculamos el color promedio de esa zona
+    color_promedio = np.mean(zona_fondo.reshape(-1, 3), axis=0)
+    r, g, b = [int(c) for c in color_promedio] 
+
+    # convertimos a formato HEX
+    color_hex = "#{:02x}{:02x}{:02x}".format(r, g, b)
+
+    #print(f"Color de fondo en RGB: {r}, {g}, {b}")
+    #print(f"Color de fondo en HEX: {color_hex}")
+
+    return color_hex
 
 # obtencion de metadatos de una imagen teniendo la ruta de la misma
 def obtener_metadatos(ruta_imagen):
@@ -244,8 +241,7 @@ def obtener_metadatos(ruta_imagen):
         metadatos['Alto (cm)'] = None
 
     # rgb y hex
-    r, g, b, hex = obtener_rgb_hex(ruta_imagen) 
-    metadatos['Color RGB'] = f"({r}, {g}, {b})"
+    hex = obtener_hex(ruta_imagen) 
     metadatos['Color HEX'] = hex
     
     # copyright y artista desde EXIF
@@ -268,4 +264,4 @@ def obtener_metadatos(ruta_imagen):
 
 
 #print(obtenerFondo("C:\\Users\\Sergio Quisbert\\Desktop\\PROYECTOS\\AppGeisha\\imagenes\\verde7.jpeg"))
-print(obtener_rgb_hex("C:\\Users\\Sergio Quisbert\\Desktop\\PROYECTOS\\AppGeisha\\imagenes\\3x3_MATE\\2_022128 copia.jpg"))
+#print(obtener_hex("C:\\Users\\Sergio Quisbert\\Desktop\\PROYECTOS\\AppGeisha\\imagenes\\3x3_MATE\\2_022128 copia.jpg"))
