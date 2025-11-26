@@ -35,11 +35,11 @@ def leer_rutas(ruta_str):
 def obtener_tamanio(nombre):
     ruta_imagen = leer_rutas(nombre)
     if ruta_imagen is None:
-        return None, None
+        return None
     else: 
         imagen = cv2.imread(str(ruta_imagen))
         if imagen is None: 
-            return None, None
+            return None
         else: 
             alto_px, ancho_px, canales = imagen.shape
 
@@ -123,9 +123,11 @@ def obtenerFondo(ruta_imagen, umbral_porcentaje = 80):
         "azul":   ((100,  120,  80),  (120, 255, 255)),
         "celeste":((80,  20, 100),  (105, 255, 255)),
         "guindo": ((160, 100, 30),  (179, 255, 200)),
-        "amarillo":((20, 50, 100),  (35, 255, 255)),
+        #"amarillo":((20, 50, 100),  (35, 255, 255)),
+        "amarillo":((18, 40, 80),  (40, 255, 255)),
         "blanco": ((0, 0, 230),  (179, 20, 255)),
-        "plomo": ((0, 0, 40), (179, 30, 220))
+        "plomo": ((0, 0, 40), (179, 30, 220)),
+        "naranja": ((10, 40, 60), (28, 255, 255))
     }
     # abrimos la imagen
     img = cv2.imread(ruta_imagen)
@@ -135,7 +137,7 @@ def obtenerFondo(ruta_imagen, umbral_porcentaje = 80):
         return False
     
     # Si la imagen se abrio entonces tomamos una porcion de ella 
-    x, y, ancho, alto = 0, 0, 20, 20
+    x, y, ancho, alto = 20, 20, 20, 20
     zona_fondo = img[y:y+alto, x:x+ancho]
 
     # convertimos ese pedazo a HSV, es mas preciso que RGB
@@ -198,7 +200,7 @@ def obtener_hex(nombre):
     y: coordenada y
     ancho, alto: tamanio area
     """
-    x, y, ancho, alto = 0, 0, 20, 20
+    x, y, ancho, alto = 20, 20, 20, 20
     zona_fondo = imagen_rgb[y:y+alto, x:x+ancho]
 
     # calculamos el color promedio de esa zona
@@ -264,4 +266,4 @@ def obtener_metadatos(ruta_imagen):
 
 
 #print(obtenerFondo("C:\\Users\\Sergio Quisbert\\Desktop\\PROYECTOS\\AppGeisha\\imagenes\\verde7.jpeg"))
-#print(obtener_hex("C:\\Users\\Sergio Quisbert\\Desktop\\PROYECTOS\\AppGeisha\\imagenes\\3x3_MATE\\2_022128 copia.jpg"))
+print(obtener_hex("C:\\Users\\Sergio Quisbert\\Desktop\\PROYECTOS\\AppGeisha\\imagenes\\3x3_MATE\\IMG_5185.jpg"))

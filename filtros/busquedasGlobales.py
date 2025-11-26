@@ -48,6 +48,8 @@ def busqueda_global_tamanio(tamanioInput, datos, cancelarCallBack = None):
             return resultados
         
         archivoTamanio = valor.get("tamanio")
+        print(clave)
+        print(valor)
         
         if not archivoTamanio:
             continue

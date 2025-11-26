@@ -18,12 +18,6 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
-        # establecemos los tamanios de el espacio de resultados
-        self.ui.splitterPrincipal.setStretchFactor(0, 30)
-        self.ui.splitterPrincipal.setStretchFactor(1, 45)
-        self.ui.splitterPrincipal.setStretchFactor(2, 25)
-        QTimer.singleShot(0, lambda: self.ui.splitterPrincipal.setSizes([30, 45, 25]))
-
         # variables para guardar filtros y rutas
         self.dataset = {}
         self.resultados = {}
@@ -33,13 +27,17 @@ class MainWindow(QMainWindow):
 
         # creamos un objeto QSettings
         self.settings = QSettings("Geisha", "AppGeisha")
-        #self.cargar_ruta_seleccionada()
+        
+        # en caso de que tengamos una ruta seleccionada, cargamos la misma
         rutaGuardada = self.settings.value("ruta_busqueda", "")
         if rutaGuardada:
             self.ruta = rutaGuardada
             self.cargarDataset(self.ruta)
 
 
+        # ********************** progressBar ******************************
+        self.ui.progressBar.hide()
+        
         # **************************** logo ****************************************
         logo_png = QPixmap("src/logoMediano.jpg")
         self.ui.logo.setPixmap(logo_png)
@@ -64,6 +62,12 @@ class MainWindow(QMainWindow):
 
         # conectamos el ListView con el label donde mostraremos la foto
         self.ui.resultadosDeBusqueda.clicked.connect(lambda index: mostrar_imagen(self, index))
+        
+        # con esto haremos que cuando el cursor se mueva con las flechas direccionales
+        # tambien se muestre la imagen en el QLabel
+        self.ui.resultadosDeBusqueda.selectionModel().selectionChanged.connect(
+            self.cambioSeleccion
+        )
 
         # *************************** calendario ********************************
         # colocamos una fecha invalida inicial (hasta el el usuario introduzca una)
@@ -82,6 +86,13 @@ class MainWindow(QMainWindow):
         ]
         for le in self.listaLineEdits:
             le.installEventFilter(self)
+
+        # dimensiones del area de resultados
+        # establecemos los tamanios de el espacio de resultados
+        self.ui.splitterPrincipal.setStretchFactor(0, 30)
+        self.ui.splitterPrincipal.setStretchFactor(1, 45)
+        self.ui.splitterPrincipal.setStretchFactor(2, 25)
+        QTimer.singleShot(0, lambda: self.ui.splitterPrincipal.setSizes([30, 45, 25]))
 
         
     def configurarListaResultados(self):
@@ -116,6 +127,11 @@ class MainWindow(QMainWindow):
         model = imagenesModel(self.resultados, icon_size=100)
         self.ui.resultadosDeBusqueda.setModel(model)
 
+        # actualizar la imagen cuando cambia la selección
+        self.ui.resultadosDeBusqueda.selectionModel().selectionChanged.connect(
+            self.cambioSeleccion
+        )
+
         # actualizamos la barra de estado
         if self.resultados:
             self.ui.statusbar.showMessage(f"Busqueda completada: {len(self.resultados)} elementos encontrados")
@@ -133,13 +149,22 @@ class MainWindow(QMainWindow):
             self.ui.nombreStatus.setText(mensaje)
         elif label == "hex":
             self.ui.hexStatus.setText(mensaje)
-        elif label == "rgb":
-            self.ui.rgbStatus.setText(mensaje)
-    
 
 
     # ************************ FUNCION QUE TRABAJA CON EL SISTEMA **********************
     def cargarDataset(self, ruta):
+        # bloqueamos los botones cuando se este armando un nuevo diccionario
+        self.ui.botonAbrir.setEnabled(False)
+        self.ui.botonBuscar.setEnabled(False)
+        self.ui.botonDetener.setEnabled(False)
+        self.ui.botonReiniciar.setEnabled(False)
+        self.ui.botonExplorar.setEnabled(False)
+
+        # reiniciamos y mostramos la barra de busqueda
+        self.ui.progressBar.show()
+        self.ui.progressBar.setValue(0)
+        QApplication.processEvents()
+        
         # limpiamos resultados previos
         self.resultados = {}
         self.ui.resultadosDeBusqueda.setModel(imagenesModel({}, icon_size=100))
@@ -178,7 +203,17 @@ class MainWindow(QMainWindow):
     def datasetCargado(self, dataset):
         self.dataset = dataset
         self.ui.progressBar.setValue(100)
-        self.ui.statusbar.showMessage(f"Datos cargado: {len(dataset)} imagenes")
+        self.ui.statusbar.showMessage(f"Datos cargados: {len(dataset)} imagenes")
+
+        # ocultamos el progressBar
+        self.ui.progressBar.hide()
+
+        # habilitamos los botones 
+        self.ui.botonAbrir.setEnabled(True)
+        self.ui.botonBuscar.setEnabled(True)
+        self.ui.botonDetener.setEnabled(True)
+        self.ui.botonReiniciar.setEnabled(True)
+        self.ui.botonExplorar.setEnabled(True)
 
     def cargar_ruta_seleccionada(self):
         ruta = self.settings.value("ruta_busqueda", "")
@@ -235,3 +270,10 @@ class MainWindow(QMainWindow):
         except:
             pass
         super().moveEvent(event)
+
+    def cambioSeleccion(self, seleccionNueva, seleccionAntigua):
+        indexes = seleccionNueva.indexes()
+        if not indexes:
+            return # no hay nada seleccionado
+        index = indexes[0]
+        mostrar_imagen(self, index)
