@@ -70,3 +70,23 @@ def mostrar_en_explorador(main):
 
     # Abrimos el explorador marcando la imagen
     subprocess.run(f'explorer /select,"{ruta}"')
+
+def busquedaPorNombreAvanzada(nombreArchivo, inputArchivo):
+    # normalizamos el input del usuario y el nombre del archivo
+    nombreArchivo = nombreArchivo.lower()
+    partes = inputArchivo.strip().split() # eliminamos los espacios en blanco en los extremos y dividimos el input si tiene espacios internos
+    # para guardar la posicion desde la que buscaremos
+    posActual = 0
+
+    for parte in partes:
+        # si la primera parte del input esta en el nombre del archivo, devuelve su posicion
+        # caso contrario devuelve -1
+        pos = nombreArchivo.find(parte, posActual)
+        
+        if pos == -1:
+            return False # ya que una parte del input es distinto al nombre del archivo, dejamos de lado al mismo
+
+        # si obtenemos una posicion, actualizamos posActual
+        posActual = pos + len(parte)
+    
+    return True

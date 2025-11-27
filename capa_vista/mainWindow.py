@@ -9,7 +9,9 @@ from utils.mostrarResultados import *
 from utils.controladorHistorial import *
 from utils.controladorBotones import controladorBusqueda
 from utils.controladorTeclado import eventosTeclas
+from utils.ventanasFlotantes import avisoFlotante
 from workers.workerDataset import WorkerDataset
+from utils.controladorJson import *
 
 
 class MainWindow(QMainWindow):
@@ -24,15 +26,35 @@ class MainWindow(QMainWindow):
         self.pixmap_original = None
         self.ruta = ""
         self.lineEditActual = None
+        self.jsonCache = "dataset.json"
 
         # creamos un objeto QSettings
         self.settings = QSettings("Geisha", "AppGeisha")
         
         # en caso de que tengamos una ruta seleccionada, cargamos la misma
         rutaGuardada = self.settings.value("ruta_busqueda", "")
+
+        # intentamos cargar el json
+        cache = cargarDiccionario(self.jsonCache)
+        if cache:
+            self.dataset = cache
+            avisoFlotante("Aviso", "Datos cargados correctamente", "advertencia", parent=self)
+
+            # para evitar errores, asignamos el modelo al QListView y conectamos la senial
+            model = imagenesModel(self.dataset, icon_size=100)
+            self.ui.resultadosDeBusqueda.setModel(model)
+            # con esto haremos que cuando el cursor se mueva con las flechas direccionales
+            # tambien se muestre la imagen en el QLabel
+            self.ui.resultadosDeBusqueda.selectionModel().selectionChanged.connect(
+                self.cambioSeleccion
+            )
+            
+        # si no hay una ruta guardada la establecemos
         if rutaGuardada:
             self.ruta = rutaGuardada
-            self.cargarDataset(self.ruta)
+            # en caso de no tener un json que cargar
+            if not cache:
+                self.cargarDataset(self.ruta)
 
 
         # ********************** progressBar ******************************
@@ -58,17 +80,15 @@ class MainWindow(QMainWindow):
         self.ui.botonDetener.clicked.connect(self.controlador.detener)
         self.ui.botonAbrir.clicked.connect(lambda: mostrar_en_explorador(self))
         self.ui.botonExplorar.clicked.connect(self.seleccionar_ruta)
+        # botones para controlar el tamanio de las miniaturas de los resultados
+        self.ui.peque.clicked.connect(lambda: tamanioMiniatura(self, 70))
+        self.ui.mediano.clicked.connect(lambda: tamanioMiniatura(self, 100))
+        self.ui.grande.clicked.connect(lambda: tamanioMiniatura(self, 250))
         
 
         # conectamos el ListView con el label donde mostraremos la foto
         self.ui.resultadosDeBusqueda.clicked.connect(lambda index: mostrar_imagen(self, index))
         
-        # con esto haremos que cuando el cursor se mueva con las flechas direccionales
-        # tambien se muestre la imagen en el QLabel
-        self.ui.resultadosDeBusqueda.selectionModel().selectionChanged.connect(
-            self.cambioSeleccion
-        )
-
         # *************************** calendario ********************************
         # colocamos una fecha invalida inicial (hasta el el usuario introduzca una)
         self.ui.dateEdit.setDate(QDate())
@@ -194,10 +214,14 @@ class MainWindow(QMainWindow):
             QFileDialog.ShowDirsOnly # mostrar solo carpetas
         )
 
-        if ruta: # si el usuario selecciono una carpeta
-            self.settings.setValue("ruta_busqueda", ruta)
-            self.ruta = ruta
-            self.cargarDataset(self.ruta)
+        if not ruta:
+            return
+        # si el usuario selecciono una ruta:
+        self.settings.setValue("ruta_busqueda", ruta)
+        self.ruta = ruta
+
+        # regeneramos el diccionario desde la nueva ruta
+        self.cargarDataset(self.ruta)
 
 
     def datasetCargado(self, dataset):
@@ -215,16 +239,8 @@ class MainWindow(QMainWindow):
         self.ui.botonReiniciar.setEnabled(True)
         self.ui.botonExplorar.setEnabled(True)
 
-    def cargar_ruta_seleccionada(self):
-        ruta = self.settings.value("ruta_busqueda", "")
-        if ruta:
-            self.ruta = ruta
-            # cargamos el dataset
-            self.dataset = armarDiccionario(self.ruta)
-            self.resultados = {}
-            self.ui.resultadosDeBusqueda.setModel(imagenesModel({}, icon_size=100))
-        else:
-            self.ruta = ""
+        # guardamos los datos en el json
+        guardarDiccionario(self.jsonCache, self.dataset)
 
     # ***************** EVENTOS **************************
     # para mostrar el combobox al hacer clic sobre el lineEdit

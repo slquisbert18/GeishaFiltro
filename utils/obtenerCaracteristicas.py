@@ -9,11 +9,8 @@ from datetime import datetime
 # ***************************************************************************
 def leer_rutas(ruta_str):
     try:
-        # convertimos la cadena a un objeto Path
-        ruta = Path(ruta_str)
-
-        # normalizamos la ruta
-        ruta = ruta.resolve()
+        # convertimos la cadena a un objeto Path y la normalizamos
+        ruta = Path(os.fsdecode(ruta_str)).resolve()
 
         # verifica si el archivo de la ruta existe
         if not ruta.exists():
@@ -33,11 +30,11 @@ def leer_rutas(ruta_str):
 # ****************** OBTENCION DE DATOS DE UNA IMAGEN ************************
 # funcion para obtener el tamanio de la imagen
 def obtener_tamanio(nombre):
-    ruta_imagen = leer_rutas(nombre)
-    if ruta_imagen is None:
+    rutaImagen = leer_rutas(nombre)
+    if rutaImagen is None:
         return None
     else: 
-        imagen = cv2.imread(str(ruta_imagen))
+        imagen = imreadUnicode(str(rutaImagen))
         if imagen is None: 
             return None
         else: 
@@ -67,21 +64,21 @@ def obtener_tamanio(nombre):
 
 # funcion para obtener la fecha
 def obtener_fecha(nombre):
-    nombre_imagen = leer_rutas(nombre)
+    rutaImagen = leer_rutas(nombre)
 
-    if nombre_imagen is None:
-        print("Error al leer el nombre de la imagen")
+    if rutaImagen is None:
         return None
     else:
         fechas = {}    
-        imagen_info = Image.open(nombre)
+        rutaFin = os.fsdecode(rutaImagen)
+        imagen_info = Image.open(rutaFin)
 
         # obtenemos datos exif de la imagen
         try:
             datos_exif = imagen_info._getexif()
             if not datos_exif:
                 # en caso de que la imagen no tenga metadatos disponibles, devolvemos la fecha de creacion del archivo
-                fechaAux = os.path.getctime(nombre_imagen)
+                fechaAux = os.path.getctime(rutaImagen)
                 fechaAux = datetime.fromtimestamp(fechaAux)
                 fechaAux = fechaAux.strftime("%Y:%m:%d")
                 fechas['DateTime'] = fechaAux
@@ -113,8 +110,7 @@ def obtener_fecha(nombre):
             print("El formato de la imagen no contiene metadatos EXIF")
 
 # funcion para determinar si el fondo de una imagen corresponde al color 'color_base'
-def obtenerFondo(ruta_imagen, umbral_porcentaje = 80):
-
+def obtenerFondo(nombre, umbral_porcentaje = 80):
     # definimos rangos de colores
     colores = {
         "rojo_1": ((0,   100, 100),  (10,  255, 255)),
@@ -129,8 +125,9 @@ def obtenerFondo(ruta_imagen, umbral_porcentaje = 80):
         "plomo": ((0, 0, 40), (179, 30, 220)),
         "naranja": ((10, 40, 60), (28, 255, 255))
     }
+    rutaImagen = leer_rutas(nombre)
     # abrimos la imagen
-    img = cv2.imread(ruta_imagen)
+    img = imreadUnicode(rutaImagen)
 
     # si no se pudo cargar la imagen devolvemos false
     if img is None:
@@ -186,7 +183,7 @@ def obtener_hex(nombre):
     ruta_archivo = leer_rutas(nombre)
     if ruta_archivo is None:
         return None
-    imagen = cv2.imread(str(nombre))
+    imagen = imreadUnicode(str(nombre))
 
     if imagen is None:
         return None
@@ -264,6 +261,14 @@ def obtener_metadatos(ruta_imagen):
             metadatos[etiqueta] = str(valor)
     return metadatos
 
+# para leer correctamente nombres con caracteres especiales
+def imreadUnicode(ruta):
+    try:
+        data = np.fromfile(ruta, dtype=np.uint8)
+        return cv2.imdecode(data, cv2.IMREAD_COLOR)
+    except Exception as e:
+        print("Error al abrir la imagen: ", e)
+        return None
 
 #print(obtenerFondo("C:\\Users\\Sergio Quisbert\\Desktop\\PROYECTOS\\AppGeisha\\imagenes\\verde7.jpeg"))
-print(obtener_hex("C:\\Users\\Sergio Quisbert\\Desktop\\PROYECTOS\\AppGeisha\\imagenes\\3x3_MATE\\IMG_5185.jpg"))
+#print(obtener_hex("C:\\Users\\Sergio Quisbert\\Desktop\\PROYECTOS\\AppGeisha\\imagenes\\3x3_MATE\\IMG_5185.jpg"))

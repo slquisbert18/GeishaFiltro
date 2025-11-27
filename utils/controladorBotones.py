@@ -67,7 +67,7 @@ class controladorBusqueda():
         
         # filtramos la lista de filtros sacando los filtros vacios
         if not filtros:
-            avisoFlotante("AVISO", "Debe ingresar al menos un valor", tipo = "advertencia", parent=self.main, )
+            avisoFlotante("AVISO", "Debe ingresar al menos un valor", tipo = "advertencia", parent=self.main)
             return
 
         # ********************** creacion del hilo y el worker ***********************

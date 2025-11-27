@@ -1,6 +1,7 @@
 from pathlib import Path
 from datetime import datetime
 from utils.obtenerCaracteristicas import *
+from utils.fileUtils import busquedaPorNombreAvanzada
 
 # ****************** BUSQUEDAS GLOBALES (SISTEMA) ****************************
 #              (trabaja con toda una ruta especificada)
@@ -48,8 +49,6 @@ def busqueda_global_tamanio(tamanioInput, datos, cancelarCallBack = None):
             return resultados
         
         archivoTamanio = valor.get("tamanio")
-        print(clave)
-        print(valor)
         
         if not archivoTamanio:
             continue
@@ -80,7 +79,7 @@ def busqueda_global_fecha(fechaInput, datos, cancelarCallBack = None):
 
     return resultados
    
-def busqueda_global_nombre(nombreInput, datos, cancelarCallBack = None):
+def busqueda_global_nombre(inputArchivo, datos, cancelarCallBack = None):
     # lista de resultados
     resultados = {}
     
@@ -88,10 +87,10 @@ def busqueda_global_nombre(nombreInput, datos, cancelarCallBack = None):
         # verificamos si el usuario detuvo la busqueda
         if cancelarCallBack and cancelarCallBack():
             return resultados
-        
-        archivoNombre = valor.get("nombre") + valor.get("formato")
+ 
+        nombreArchivo = valor.get("nombre") + valor.get("formato")
 
-        if nombreInput.lower() in archivoNombre.lower():
+        if busquedaPorNombreAvanzada(nombreArchivo, inputArchivo):
             resultados[clave] = valor
     
     return resultados

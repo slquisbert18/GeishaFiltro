@@ -209,9 +209,40 @@ class Ui_MainWindow(object):
         self.splitterPrincipal = QSplitter(self.centralwidget)
         self.splitterPrincipal.setObjectName(u"splitterPrincipal")
         self.splitterPrincipal.setOrientation(Qt.Orientation.Horizontal)
-        self.resultadosDeBusqueda = QListView(self.splitterPrincipal)
+        self.panelLateral = QWidget(self.splitterPrincipal)
+        self.panelLateral.setObjectName(u"panelLateral")
+        self.layoutPanelLateral = QVBoxLayout(self.panelLateral)
+        self.layoutPanelLateral.setObjectName(u"layoutPanelLateral")
+        self.layoutPanelLateral.setContentsMargins(0, 0, 0, 0)
+        self.resultadosDeBusqueda = QListView(self.panelLateral)
         self.resultadosDeBusqueda.setObjectName(u"resultadosDeBusqueda")
-        self.splitterPrincipal.addWidget(self.resultadosDeBusqueda)
+
+        self.layoutPanelLateral.addWidget(self.resultadosDeBusqueda)
+
+        self.layoutBotones = QHBoxLayout()
+        self.layoutBotones.setObjectName(u"layoutBotones")
+        self.peque = QPushButton(self.panelLateral)
+        self.peque.setObjectName(u"peque")
+
+        self.layoutBotones.addWidget(self.peque)
+
+        self.mediano = QPushButton(self.panelLateral)
+        self.mediano.setObjectName(u"mediano")
+
+        self.layoutBotones.addWidget(self.mediano)
+
+        self.grande = QPushButton(self.panelLateral)
+        self.grande.setObjectName(u"grande")
+
+        self.layoutBotones.addWidget(self.grande)
+
+        self.layoutBotones.setStretch(0, 1)
+        self.layoutBotones.setStretch(1, 1)
+        self.layoutBotones.setStretch(2, 1)
+
+        self.layoutPanelLateral.addLayout(self.layoutBotones)
+
+        self.splitterPrincipal.addWidget(self.panelLateral)
         self.panelCentral = QWidget(self.splitterPrincipal)
         self.panelCentral.setObjectName(u"panelCentral")
         self.vista = QVBoxLayout(self.panelCentral)
@@ -302,6 +333,9 @@ class Ui_MainWindow(object):
         self.botonBuscar.setText(QCoreApplication.translate("MainWindow", u"BUSCAR", None))
         self.botonDetener.setText(QCoreApplication.translate("MainWindow", u"DETENER", None))
         self.botonReiniciar.setText(QCoreApplication.translate("MainWindow", u"LIMPIAR", None))
+        self.peque.setText(QCoreApplication.translate("MainWindow", u"Small", None))
+        self.mediano.setText(QCoreApplication.translate("MainWindow", u"Medium", None))
+        self.grande.setText(QCoreApplication.translate("MainWindow", u"Large", None))
         self.foto.setText(QCoreApplication.translate("MainWindow", u".", None))
         self.botonAbrir.setText(QCoreApplication.translate("MainWindow", u"ABRIR EN EL EXPLORADOR", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"INFORMACION DE LA IMAGEN", None))

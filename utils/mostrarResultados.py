@@ -1,8 +1,9 @@
 from PySide6.QtWidgets import QHeaderView, QTableWidgetItem
 from PySide6.QtGui import QPixmap, Qt
+from PySide6.QtCore import QSize
 import os
 from utils.obtenerCaracteristicas import obtener_metadatos
-
+from modelos.modeloImagenes import imagenesModel
 # ******************** FUNCIONES PARA MOSTRAR ICONOS E IMAGENES *********************
 def mostrar_imagen(self, index):
     ruta_completa = index.data(Qt.UserRole) # obtenemos solo el nombre del archivo
@@ -46,3 +47,17 @@ def mostrar_metadatos(self, metadatos):
         tabla.setItem(fila, 1, QTableWidgetItem(str(valor)))
 
     tabla.resizeColumnsToContents
+
+# funcion que cambia el tamanio de las miniaturas
+def tamanioMiniatura(self, nuevoTam):
+    self.ui.resultadosDeBusqueda.setIconSize(QSize(nuevoTam, nuevoTam))
+
+    # si hay resultados, recrear el model 
+    if self.resultados:
+        model = imagenesModel(self.resultados, icon_size=nuevoTam)
+        self.ui.resultadosDeBusqueda.setModel(model)
+
+        # reconectar el evento de seleccion
+        self.ui.resultadosDeBusqueda.selectionModel().selectionChanged.connect(
+            self.cambioSeleccion
+        )
