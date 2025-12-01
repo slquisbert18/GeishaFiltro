@@ -110,23 +110,68 @@ class Ui_MainWindow(object):
 
         self.verticalLayout = QVBoxLayout()
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.labelFecha = QLabel(self.centralwidget)
-        self.labelFecha.setObjectName(u"labelFecha")
+        self.horizontalLayout = QHBoxLayout()
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.label_5 = QLabel(self.centralwidget)
+        self.label_5.setObjectName(u"label_5")
 
-        self.verticalLayout.addWidget(self.labelFecha)
+        self.horizontalLayout.addWidget(self.label_5)
 
+        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout.addItem(self.horizontalSpacer_2)
+
+        self.label_3 = QLabel(self.centralwidget)
+        self.label_3.setObjectName(u"label_3")
+
+        self.horizontalLayout.addWidget(self.label_3)
+
+        self.horizontalLayout.setStretch(0, 1)
+        self.horizontalLayout.setStretch(2, 1)
+
+        self.verticalLayout.addLayout(self.horizontalLayout)
+
+        self.horizontalLayout_2 = QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.dateEdit = QDateEdit(self.centralwidget)
         self.dateEdit.setObjectName(u"dateEdit")
         self.dateEdit.setCalendarPopup(True)
 
-        self.verticalLayout.addWidget(self.dateEdit)
+        self.horizontalLayout_2.addWidget(self.dateEdit)
+
+        self.mesIni = QLineEdit(self.centralwidget)
+        self.mesIni.setObjectName(u"mesIni")
+
+        self.horizontalLayout_2.addWidget(self.mesIni)
+
+        self.label_6 = QLabel(self.centralwidget)
+        self.label_6.setObjectName(u"label_6")
+
+        self.horizontalLayout_2.addWidget(self.label_6)
+
+        self.mesFin = QLineEdit(self.centralwidget)
+        self.mesFin.setObjectName(u"mesFin")
+
+        self.horizontalLayout_2.addWidget(self.mesFin)
+
+        self.inputAnio = QLineEdit(self.centralwidget)
+        self.inputAnio.setObjectName(u"inputAnio")
+
+        self.horizontalLayout_2.addWidget(self.inputAnio)
+
+        self.horizontalLayout_2.setStretch(0, 2)
+        self.horizontalLayout_2.setStretch(1, 1)
+        self.horizontalLayout_2.setStretch(3, 1)
+        self.horizontalLayout_2.setStretch(4, 1)
+
+        self.verticalLayout.addLayout(self.horizontalLayout_2)
 
         self.fechaStatus = QLabel(self.centralwidget)
         self.fechaStatus.setObjectName(u"fechaStatus")
 
         self.verticalLayout.addWidget(self.fechaStatus)
 
-        self.verticalLayout.setStretch(0, 2)
+        self.verticalLayout.setStretch(0, 1)
         self.verticalLayout.setStretch(2, 1)
 
         self.hlInputs.addLayout(self.verticalLayout)
@@ -178,7 +223,7 @@ class Ui_MainWindow(object):
         self.hlInputs.setStretch(0, 1)
         self.hlInputs.setStretch(1, 1)
         self.hlInputs.setStretch(2, 1)
-        self.hlInputs.setStretch(3, 2)
+        self.hlInputs.setStretch(3, 1)
         self.hlInputs.setStretch(4, 1)
 
         self.VerticalLayout.addLayout(self.hlInputs)
@@ -253,7 +298,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 178, 323))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 178, 317))
         self.verticalLayout_2 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout_3 = QVBoxLayout()
@@ -314,14 +359,19 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"GeishaFiltro", None))
         self.logo.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
         self.botonExplorar.setText(QCoreApplication.translate("MainWindow", u"Carpeta raiz", None))
         self.labelFondo.setText(QCoreApplication.translate("MainWindow", u"Color de fondo:", None))
         self.fondoStatus.setText("")
         self.labelTamanio.setText(QCoreApplication.translate("MainWindow", u"Tama\u00f1o de la foto:", None))
         self.tamanioStatus.setText("")
-        self.labelFecha.setText(QCoreApplication.translate("MainWindow", u"Fecha de registro:", None))
+        self.label_5.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
+        self.label_3.setText(QCoreApplication.translate("MainWindow", u"Rango", None))
+        self.mesIni.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Mes ini", None))
+        self.label_6.setText(QCoreApplication.translate("MainWindow", u"-", None))
+        self.mesFin.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Mes fin", None))
+        self.inputAnio.setPlaceholderText(QCoreApplication.translate("MainWindow", u"A\u00f1o", None))
         self.fechaStatus.setText("")
         self.label.setText(QCoreApplication.translate("MainWindow", u"Nombre del archivo:", None))
         self.leNombreArchivo.setInputMask("")

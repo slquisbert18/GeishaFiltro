@@ -78,6 +78,77 @@ def busqueda_global_fecha(fechaInput, datos, cancelarCallBack = None):
                 break
 
     return resultados
+
+# filtros teniendo un rango de fecha para buscar
+def filtroMes(inputMes, datos):
+    resultados = {}
+    for clave, valor in datos.items():
+        diccionarioFechas = valor.get("fecha")
+        if not diccionarioFechas:
+            continue
+        for fecha in diccionarioFechas.values():
+            # como tenemos fechas de tipo -> YYYY:MM:DD
+            anio, mes, dia = fecha.split(":")
+            if int(inputMes) == int(mes):
+                resultados[clave] = valor
+                break # si encontramos una fecha coincidente cortamos el recorrido del diccionario de fechas
+    return resultados
+
+def filtroMesAnio(inputMes, inputAnio, datos):
+    resultados = {}
+    for clave, valor in datos.items():
+        diccionarioFechas = valor.get("fecha")
+        if not diccionarioFechas:
+            continue
+        for fecha in diccionarioFechas.values():
+            # como tenemos fechas de tipo -> YYYY:MM:DD
+            anio, mes, dia = fecha.split(":")
+            if int(inputMes) == int(mes) and inputAnio == anio:
+                resultados[clave] = valor
+                break # si encontramos una fecha coincidente cortamos el recorrido del diccionario de fechas
+    return resultados
+
+def filtroMesesAnio(inputMesIni, inputMesFin, inputAnio, datos):
+    resultados = {}
+    for clave, valor in datos.items():
+        diccionarioFechas = valor.get("fecha")
+        if not diccionarioFechas:
+            continue
+        for fecha in diccionarioFechas.values():
+            # como tenemos fechas de tipo -> YYYY:MM:DD
+            anio, mes, dia = fecha.split(":")
+            if int(mes) >= int(inputMesIni) and int(mes) <= int(inputMesFin) and inputAnio == anio:
+                resultados[clave] = valor
+                break # si encontramos una fecha coincidente cortamos el recorrido del diccionario de fechas
+    return resultados
+
+def filtroMeses(inputMesIni, inputMesFin, datos):
+    resultados = {}
+    for clave, valor in datos.items():
+        diccionarioFechas = valor.get("fecha")
+        if not diccionarioFechas:
+            continue
+        for fecha in diccionarioFechas.values():
+            # como tenemos fechas de tipo -> YYYY:MM:DD
+            anio, mes, dia = fecha.split(":")
+            if int(mes) >= int(inputMesIni) and int(mes) <= int(inputMesFin):
+                resultados[clave] = valor
+                break # si encontramos una fecha coincidente cortamos el recorrido del diccionario de fechas
+    return resultados   
+
+def filtroAnio(inputAnio, datos):
+    resultados = {}
+    for clave, valor in datos.items():
+        diccionarioFechas = valor.get("fecha")
+        if not diccionarioFechas:
+            continue
+        for fecha in diccionarioFechas.values():
+            # como tenemos fechas de tipo -> YYYY:MM:DD
+            anio, mes, dia = fecha.split(":")
+            if anio == inputAnio:
+                resultados[clave] = valor
+                break # si encontramos una fecha coincidente cortamos el recorrido del diccionario de fechas
+    return resultados         
    
 def busqueda_global_nombre(inputArchivo, datos, cancelarCallBack = None):
     # lista de resultados
@@ -94,4 +165,3 @@ def busqueda_global_nombre(inputArchivo, datos, cancelarCallBack = None):
             resultados[clave] = valor
     
     return resultados
-    

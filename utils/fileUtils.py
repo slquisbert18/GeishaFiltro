@@ -74,7 +74,21 @@ def mostrar_en_explorador(main):
 def busquedaPorNombreAvanzada(nombreArchivo, inputArchivo):
     # normalizamos el input del usuario y el nombre del archivo
     nombreArchivo = nombreArchivo.lower()
-    partes = inputArchivo.strip().split() # eliminamos los espacios en blanco en los extremos y dividimos el input si tiene espacios internos
+    partes = inputArchivo.lower().strip().split() # eliminamos los espacios en blanco en los extremos y dividimos el input si tiene espacios internos
+    
+    # separar el nombre del archivo en palabras
+    palabras = nombreArchivo.split()
+
+    # si el usuario ingresó más partes que palabras del archivo → no coincide
+    if len(partes) > len(palabras):
+        return False
+
+    # comparar cada parte del input con las palabras del archivo
+    for i, parte in enumerate(partes):
+        # si la parte NO coincide con el inicio de la palabra → fallo
+        if not palabras[i].startswith(parte):
+            return False
+    """
     # para guardar la posicion desde la que buscaremos
     posActual = 0
 
@@ -88,5 +102,5 @@ def busquedaPorNombreAvanzada(nombreArchivo, inputArchivo):
 
         # si obtenemos una posicion, actualizamos posActual
         posActual = pos + len(parte)
-    
+    """
     return True

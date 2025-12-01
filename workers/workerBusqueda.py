@@ -67,6 +67,34 @@ class Worker(QObject):
                 if not self.resultados:
                     self.status_update.emit("fecha", "Sin coincidencias")
             
+            elif primerFiltro == "rango":
+                mesIni, mesFin, inputAnio = valor.split(';')
+                # caso cero: tenemos solo el mes
+                if ((mesIni != "_" and mesFin == "_") or (mesIni == "_" and mesFin != "_")) and inputAnio == "_":
+                    if mesIni != "_":
+                        self.resultados = filtroMes(mesIni, datasetActual)
+                    else:
+                        self.resultados = filtroMes(mesFin, datasetActual)
+
+                # primer caso: tenemos solo un mes y el anio
+                if ((mesIni != "_" and mesFin == "_") or (mesIni == "_" and mesFin != "_")) and inputAnio != "_":
+                    if mesIni != "_":
+                        self.resultados = filtroMesAnio(mesIni, inputAnio, datasetActual)
+                    else:
+                        self.resultados = filtroMesAnio(mesFin, inputAnio, datasetActual)
+
+                # segundo caso: tenemos ambos meses y el anio
+                elif mesIni != "_" and mesFin != "_" and inputAnio != "_":
+                    self.resultados = filtroMesesAnio(mesIni, mesFin, inputAnio, datasetActual)
+
+                # tercer caso: tenemos ambos meses pero no el anio
+                elif mesIni != "_" and mesFin != "_" and inputAnio == "_":
+                    self.resultados = filtroMeses(mesIni, mesFin, datasetActual)
+
+                # cuarto caso: no tenemos meses pero si el anio
+                elif mesIni == "_" and mesFin == "_" and inputAnio != "_":
+                    self.resultados = filtroAnio(inputAnio, datasetActual)
+            
             elif primerFiltro == "nombre":
                 self.resultados = busqueda_global_nombre(
                     valor,
@@ -136,6 +164,34 @@ class Worker(QObject):
                         self.status_update.emit("fecha", "Sin coincidencias")
                     else:
                         self.resultados = resultadoFiltroFecha
+                
+                elif filtro == "rango":
+                    mesIni, mesFin, inputAnio = valor.split(';')
+                    # caso cero: tenemos solo el mes
+                    if ((mesIni != "_" and mesFin == "_") or (mesIni == "_" and mesFin != "_")) and inputAnio == "_":
+                        if mesIni != "_":
+                            self.resultados = filtroMes(mesIni, self.resultados)
+                        else:
+                            self.resultados = filtroMes(mesFin, self.resultados)
+
+                    # primer caso: tenemos solo un mes y el anio
+                    if ((mesIni != "_" and mesFin == "_") or (mesIni == "_" and mesFin != "_")) and inputAnio != "_":
+                        if mesIni != "_":
+                            self.resultados = filtroMesAnio(mesIni, inputAnio, self.resultados)
+                        else:
+                            self.resultados = filtroMesAnio(mesFin, inputAnio, self.resultados)
+
+                    # segundo caso: tenemos ambos meses y el anio
+                    elif mesIni != "_" and mesFin != "_" and inputAnio != "_":
+                        self.resultados = filtroMesesAnio(mesIni, mesFin, inputAnio, self.resultados)
+
+                    # tercer caso: tenemos ambos meses pero no el anio
+                    elif mesIni != "_" and mesFin != "_" and inputAnio == "_":
+                        self.resultados = filtroMeses(mesIni, mesFin, self.resultados)
+
+                    # cuarto caso: no tenemos meses pero si el anio
+                    elif mesIni == "_" and mesFin == "_" and inputAnio != "_":
+                        self.resultados = filtroAnio(inputAnio, self.resultados)
 
                 elif filtro == "nombre":
                     resultadoFiltroNombre = filtrar_por_nombre(self.resultados, valor)

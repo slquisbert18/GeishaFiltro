@@ -4,6 +4,7 @@ from modelos.modeloImagenes import imagenesModel
 from workers.workerBusqueda import Worker
 from utils.controladorHistorial import guardar_historial
 from utils.ventanasFlotantes import avisoFlotante
+from utils.obtenerCaracteristicas import mes2int
 
 class controladorBusqueda():
     def __init__(self, main, datos):
@@ -64,6 +65,37 @@ class controladorBusqueda():
         
         if fechaRecogida != "":
             filtros["fecha"] = fechaRecogida
+
+        
+        mesIni = mes2int(ui.mesIni.text())
+        mesFin = mes2int(ui.mesFin.text())
+        inputAnio = mes2int(ui.inputAnio.text())
+
+        listaResultados = [mesIni, mesFin, inputAnio]
+        resultado = []
+        for r in listaResultados:
+            if isinstance(r, str) and len(r.split(";")) > 1:
+                res, val = r.split(";")
+                if  res == "error":
+                    resultado.append(val) # si el valor tiene "error" lo agregamos a resultado
+        if resultado: 
+            avisoFlotante("ERROR", f"Datos incorrectos: {", ".join(resultado)}", tipo="error", parent=self.main)
+        else:  #si no hay errores de typeo guardamos los valores
+            if mesIni != "" or mesFin != "" or inputAnio != "":
+                inputRango = "" # posibles casos del filtro por rango 
+                if mesIni == "":
+                    inputRango += "_;"
+                else:
+                    inputRango += f"{mesIni};"
+                if mesFin == "":
+                    inputRango += '_;'
+                else:
+                    inputRango += f"{mesFin};"
+                if inputAnio == "":
+                    inputRango += "_"
+                else:
+                    inputRango += f"{inputAnio}"
+                filtros["rango"] = inputRango
         
         # filtramos la lista de filtros sacando los filtros vacios
         if not filtros:
@@ -103,6 +135,9 @@ class controladorBusqueda():
     
     def reiniciar(self):
         ui = self.main.ui
+
+        ui.statusbar.showMessage("")
+        
         ui.leFondo.clear()
         ui.fondoStatus.setText(" ")
 
@@ -111,6 +146,12 @@ class controladorBusqueda():
 
         ui.dateEdit.setDate(QDate(2000, 1, 1))
         ui.fechaStatus.setText(" ")
+        ui.mesIni.setText("")
+        ui.mesIni.setPlaceholderText("Mes ini")
+        ui.mesFin.setText("")
+        ui.mesFin.setPlaceholderText("Mes fin")
+        ui.inputAnio.setText("")
+        ui.inputAnio.setPlaceholderText("Año")
 
         ui.leNombreArchivo.clear()
         ui.nombreStatus.setText(" ")

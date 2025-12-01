@@ -1,5 +1,6 @@
 from datetime import datetime
 from utils.obtenerCaracteristicas import *
+from utils.fileUtils import busquedaPorNombreAvanzada
 import copy
 
 
@@ -42,7 +43,7 @@ def filtrar_por_nombre(resultados, inputNombre):
         nombreArchivo = datos["nombre"]
 
         # si el nombre introducido no esta en el nombre extraido, se elimina de la lista
-        if inputNombre.lower() in nombreArchivo.lower():
+        if busquedaPorNombreAvanzada(nombreArchivo.lower(), inputNombre.lower(),):
             resultado[clave] = datos
             
     return resultado

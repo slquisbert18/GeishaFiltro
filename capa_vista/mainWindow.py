@@ -61,7 +61,7 @@ class MainWindow(QMainWindow):
         self.ui.progressBar.hide()
         
         # **************************** logo ****************************************
-        logo_png = QPixmap("src/logoMediano.jpg")
+        logo_png = QPixmap("recursos/logoMediano.jpg")
         self.ui.logo.setPixmap(logo_png)
         self.ui.logo.setScaledContents(True)
 

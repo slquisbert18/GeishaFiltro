@@ -73,14 +73,15 @@ def obtener_fecha(nombre):
         rutaFin = os.fsdecode(rutaImagen)
         imagen_info = Image.open(rutaFin)
 
+        # en caso de que la imagen no tenga metadatos disponibles o el DateTimeOriginal, obtenemos la fecha de creacion del archivo
+        fechaAux = os.path.getctime(rutaImagen)
+        fechaAux = datetime.fromtimestamp(fechaAux)
+        fechaAux = fechaAux.strftime("%Y:%m:%d")
+
         # obtenemos datos exif de la imagen
         try:
             datos_exif = imagen_info._getexif()
             if not datos_exif:
-                # en caso de que la imagen no tenga metadatos disponibles, devolvemos la fecha de creacion del archivo
-                fechaAux = os.path.getctime(rutaImagen)
-                fechaAux = datetime.fromtimestamp(fechaAux)
-                fechaAux = fechaAux.strftime("%Y:%m:%d")
                 fechas['DateTime'] = fechaAux
                 return fechas
             # guardamos todas las fechas disponibles en los datos exif
@@ -92,18 +93,26 @@ def obtener_fecha(nombre):
             DateTime: fh de la ultima modificacion del archivo
             FileModifyDate/FileCreateDate: si se encuentra presente se almacena (no siempre disponible)
             """
+            # mapeamos los id a nombres legibles (ej: 36867 = DateTimeOriginal)
+            etiquetasMapeadas = {
+                ExifTags.TAGS.get(etiquetaId, etiquetaId): value
+                for etiquetaId, value in datos_exif.items()
+            }
+
+            # buscamos la fecha con la etiqueta 'DateTimeOriginal'
+            if 'DateTimeOriginal' in etiquetasMapeadas:
+                # almacenamos los primeros 10 caracteres (YYYY:MM:DD)
+                fechaStr = etiquetasMapeadas['DateTimeOriginal']
+                fechas['DateTimeOriginal'] = fechaStr[:10]
+
+            """ FUNCION PARA OBTENER TODAS LAS FECHAS DISPONIBLES DE UN ARCHIVO
             for etiqueta_id, value in datos_exif.items():
                 etiqueta = ExifTags.TAGS.get(etiqueta_id, etiqueta_id)
                 if type(etiqueta) is str and "Date" in etiqueta:
                     fechas[etiqueta] = value[:10]
-                    
             """
-            if fechas:
-                for etiqueta, valor in fechas.items():
-                    print(f"{etiqueta}: {valor[:10]}")
-            else:
-                print("No se encontro la fecha de creacion del archivo")
-            """
+            if not fechas:
+                fechas['DateTime'] = fechaAux
             return fechas
 
         except AttributeError:
@@ -269,6 +278,35 @@ def imreadUnicode(ruta):
     except Exception as e:
         print("Error al abrir la imagen: ", e)
         return None
+
+def mes2int(cadena):
+    meses = {
+        "enero" : 1,
+        "febrero" : 2,
+        "marzo" : 3,
+        "abril" : 4,
+        "mayo" : 5,
+        "junio" : 6,
+        "julio" : 7,
+        "agosto" : 8,
+        "septiembre" : 9,
+        "octubre" : 10,
+        "novimebre" : 11,
+        "diciembre" : 12
+    }
+    if cadena == "":
+        return cadena
+    
+    try:
+        valor = int(cadena) 
+        return valor # en caso de que el input sea un int lo devolvemos
+    except ValueError:
+        if cadena in meses:
+            valor = meses[cadena]
+            return valor
+        else:
+            return f"error;{cadena}"
+        
 
 #print(obtenerFondo("C:\\Users\\Sergio Quisbert\\Desktop\\PROYECTOS\\AppGeisha\\imagenes\\verde7.jpeg"))
 #print(obtener_hex("C:\\Users\\Sergio Quisbert\\Desktop\\PROYECTOS\\AppGeisha\\imagenes\\3x3_MATE\\IMG_5185.jpg"))
